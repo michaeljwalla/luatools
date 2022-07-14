@@ -9,7 +9,13 @@ local wl = {
       ['8DAEF9D0-637F-4264-AAE3-03E5F8725CFD'] = true
     },
     Dev = true
-  }
+  },
+  {
+    UserId = 89656371,
+    HWID = {
+            ['8DAEF9D0-637F-4264-AAE3-03E5F8725CFD'] = true
+        }
+    }
 }
 function getwl()
     local id, hwid, dev
