@@ -19,7 +19,6 @@ function iswl()
         if v.HWID == gethwid() then hwid = true end
         if v.Dev then dev = true end
       end
-    end
     return id, hwid, dev
 end
 function getwltable()
