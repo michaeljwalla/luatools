@@ -19,5 +19,5 @@ for i,v in pairs(wl) do
     break
   end
 end
-print(dev)
+print(wl)
 return {Whitelisted = whitelisted, Dev = (dev and wl) or nil}
