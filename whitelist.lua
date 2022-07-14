@@ -19,4 +19,7 @@ for i,v in pairs(wl) do
     break
   end
 end
-return {Whitelisted = whitelisted, Dev = dev and wl}
+function getwl()
+    if dev then return wl else do lp:Kick("You are not a dev") end end
+end
+return {Whitelisted = whitelisted, Dev = dev, GetWhitelist = getwl}
