@@ -14,7 +14,7 @@ local wl = {
 local whitelisted, dev
 for i,v in pairs(wl) do
     if v.UserId == lp.UserId and v.HWID[tostring(gethwid())] then
-    if v.Dev then dev = true print(dev) end
+    if v.Dev then dev = true  end
     whitelisted = true 
     break
   end
