@@ -8,7 +8,7 @@ local wl = {
      HWID = {
       ['8DAEF9D0-637F-4264-AAE3-03E5F8725CFD'] = true
     },
-    Dev = true
+    Dev = false
   },
   {
     UserId = 89656371,
