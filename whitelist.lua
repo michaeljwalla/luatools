@@ -11,12 +11,15 @@ local wl = {
     Dev = false
   }
 }
-local whitelisted, dev
-for i,v in pairs(wl) do
-    if v.UserId == lp.UserId and v.HWID[tostring(gethwid())] then
-    if v.Dev then dev = true end
-    whitelisted = true 
-    break
-  end
+function getwl()
+    local id, hwid, dev
+    for i,v in pairs(wl) do
+        if v.UserId == lp.UserId then id = true end
+        if v.HWID[gethwid()] then hwid = true end
+        if v.Dev and (id or hwid) then dev = true end
+    end
+    return {UserId = id, HWID = hwid, Dev = dev}
 end
-return whitelisted, (dev and wl) or nil
+local d = getwl()
+local id, hwid, dev = d.UserId, d.HWID, d.Dev
+return {Whitelisted = id or hwid, Dev = dev, GetWhitelist = getwl, WhitelistedBy = getwl()}
