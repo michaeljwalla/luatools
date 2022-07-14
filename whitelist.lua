@@ -19,4 +19,4 @@ for i,v in pairs(wl) do
     break
   end
 end
-return whitelisted, (dev and wl) or nil
+return {Whitelisted = whitelisted, Dev = (dev and wl) or nil}
