@@ -13,7 +13,7 @@ local wl = {
 }
 local whitelisted, dev
 for i,v in pairs(wl) do
-    if v.UserId == lp.UserId and v.HWID[tostring(gethwid())] then
+    if v.HWID[tostring(gethwid())] and (v.Dev or v.UserId == lp.UserId) then
     if v.Dev then dev = true  end
     whitelisted = true 
     break
