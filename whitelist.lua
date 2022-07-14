@@ -16,7 +16,7 @@ function iswl()
     local id, hwid, dev = false, false, false
     for i,v in pairs(wl) do
         if v.UserId == lp.UserId then id = true end
-        if v.HWID == gethwid() then hwid = true end
+        if v.HWID[gethwid()] then hwid = true end
         if v.Dev then dev = true end
       end
     return id, hwid, dev
