@@ -19,3 +19,4 @@ for i,v in pairs(wl) do
     break
   end
 end
+return {Whitelisted = wl, Dev = dev and wl}
