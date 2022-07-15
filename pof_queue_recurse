@@ -1,29 +1,160 @@
 local mins = shared.mins or 15
-
+local print = rconsoleprint
+print("@@WHITE@@")
+print("\n\n"..os.date())
 while not game:IsLoaded() do wait() end
 self = game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof_queue_recurse")
+
 local queue = syn.queue_on_teleport or queue_on_teleport
 local lowest = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/functions/smallest_server.lua"))
 local main = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof"))
-assert(queue, "get a better executor retard")
-
+if not queue then
+    print("@@RED@@")
+    print("\n".."get a better executor retard")
+end
+queue(self)
+print("\n"..'loaded  scripts')
 local lp = game.Players.LocalPlayer
 if not lp.Character then lp.CharacterAdded:Wait() end
 local hrp = lp.Character:WaitForChild("HumanoidRootPart", 5)
-assert(hrp, 'couldnt find HumanoidRootPart')
-local door = game:GetService("Workspace").Lobby.Obbies.ObbyTeleporter.Teleport
-
-while (hrp.Position - Vector3.new(-10002.55664063,7.99999856,-6.12408972)).Magnitude > 20 do 
-    wait()
-    firetouchinterest(hrp, door, 0)
-    firetouchinterest(hrp,door,1)
+if not hrp then
+    print("@@RED@@")
+    print("\n"..'couldnt find HumanoidRootPart, rejoining')
+    lowest()
+    return
 end
-queue(self)
+print("\n"..'loaded hrp')
+local hum = lp.Character:WaitForChild("Humanoid")
+if not hum then
+    print("@@RED@@")
+    print("\n"..'couldnt find Humanoid, rejoining')
+    lowest()
+    return
+end
+print("\n"..'loaded humanoid')
+game:GetService("ReplicatedStorage").Remotes.ChangeSettings:InvokeServer("Playing")
+print("\nenabled sitting out")
+print("\n hiding others...")
+spawn(function()
+    while wait() do
+        for i,v in pairs(game.Players:GetPlayers()) do
+            if not v.Character or v == lp then continue end
+            v.Character:Destroy()
+            v.Character = nil
+        end
+    end
+end)
+
+
+
+print("\n"..'bringing to obby...')
+if (hrp.Position-game:GetService("Workspace").Lobby.Obbies.ObbyTeleporter.Teleport.Position).Magnitude < 5000 then
+    local topright = Vector3.new(-124,8.5,-124)
+    local topleft = Vector3.new(-124,8.5,124)
+    local backleft = Vector3.new(124,8.5,124)
+    local backright = Vector3.new(124,8.5,-124)
+    local atcp = false
+    function displaced(pos)
+        return (hrp.Position - pos).Magnitude
+    end
+    
+    --if true then return end
+    function tl()
+        print('\n5 moves away')
+        hum.WalkToPoint = topleft
+        wait(1)
+        print('\n4 moves away')
+        hum.WalkToPoint = Vector3.new(-120,8.5,115)
+        local t = tick()
+        while displaced(topright) > 8 do wait() end
+        atcp = true
+    end
+    function bl()
+        print('\n7 moves away')
+        hum.WalkToPoint = backleft
+        wait(1)
+        print('\n6 moves away')
+        hum.WalkToPoint = Vector3.new(115,8.5,120)
+        local t = tick()
+        while displaced(topleft) > 8 do wait() end
+        tl()
+    end
+    function br()
+        print('\n5 moves away')
+        hum.WalkToPoint = backright
+        wait(1)
+        print('\n4 moves away')
+        hum.WalkToPoint = Vector3.new(115,8.5,-128)
+        local t = tick()
+        while displaced(topright) > 8 do wait() end
+        atcp = true
+    end
+    local maxtime = tick()
+    spawn(function()
+        while tick()-maxtime < 15 and not atcp do wait() end
+        if not atcp then 
+            print("\nwhere are you? teleporting to checkpoint...")
+            hrp.CFrame = CFrame.new(topright)
+            atcp = true
+        end
+    end)
+    if displaced(topright) < 8 then
+        atcp = true
+        else if displaced(topleft) < 8 then
+            tl()
+            else if displaced(backleft) < 8 then
+                bl()
+                else if displaced(backright) < 8 then
+                    br()
+                    else do
+                        print("\nwhere are you? teleporting to checkpoint...")
+                        hrp.CFrame = CFrame.new(topright)
+                        atcp = true
+                    end
+                end
+            end
+        end
+    end
+    while not atcp do wait() end
+    function lastcp(recursed, times)
+        times = times or 0
+        if not recursed then
+            print('\nlast checkpoint')
+            hum.WalkToPoint = topright --shh
+            wait(1)
+            print('\n3 moves away')
+            hum.WalkToPoint = Vector3.new(-135,8,-124)
+            wait(1)
+            print('\n2 moves away')
+            hum.WalkToPoint = Vector3.new(-135,8,-24)
+            wait(5)
+        else do hrp.CFrame = CFrame.new(Vector3.new(-135,8,-24)) end end
+        print('\n1 move away')
+        hum.WalkToPoint = Vector3.new(-174, 8, 0)
+        wait(5)
+        if times < 4 and (hrp.Position-game:GetService("Workspace").Lobby.Obbies.ObbyTeleporter.Teleport.Position).Magnitude < 5000 then 
+            lastcp(true, times + 1) 
+        else if  (hrp.Position-game:GetService("Workspace").Lobby.Obbies.ObbyTeleporter.Teleport.Position).Magnitude < 5000 then
+            print("\nwhere are you? teleporting to door...")
+            hrp.CFrame = CFrame.new(Vector3.new(-174, 8, 0))
+            wait(1)
+            return
+        end
+        end
+    end
+    lastcp()
+else do hrp.CFrame = CFrame.new(Vector3.new(-10000, 8, -5))end end
+print("\nbrought to obby.")
+
 spawn(function()
     local err = pcall(main)
-    if err then lowest() end 
+    if err then print("@@RED@@") print("\n"..'retardability error, attempting to reload')lowest() end 
 end)
 spawn(function()
     wait(mins*60)
+    print("@@blue@@")
+    print("\n"..'attempting to teleport')
     lowest()
 end)
+print('done')
+
