@@ -1,3 +1,5 @@
+shared.retardabilityerror = false --DONT TOUCH
+shared.teleportfail = false
 local mins = shared.mins or 0.5
 local print = rconsoleprint
 print("@@WHITE@@")
@@ -34,8 +36,23 @@ if not hum then
     return
 end
 print("\n"..'loaded humanoid')
-
-if not lp.TeleportedIn then game:GetService("ReplicatedStorage").Remotes.ChangeSettings:InvokeServer("Playing") end
+local settings,playing = lp:WaitForChild("Settings",5)
+if settings then playing = settings:WaitForChild("Playing",5) end
+if not playing then
+    print("@@RED@@")
+    print("\n"..'couldnt find playvalue, rejoining...')
+    lowest()
+    return
+end
+local remotes, changesettings = game.ReplicatedStorage:WaitForChild("Remotes", 5)
+if remotes then changesettings = remotes:WaitForChild("ChangeSettings",5) end
+if not changesettings then
+    print("@@RED@@")
+    print("\n"..'couldnt find sit-out function, rejoining...')
+    lowest()
+    return
+end
+if game:GetService("Players").LocalPlayer.Settings.Playing then game:GetService("ReplicatedStorage").Remotes.ChangeSettings:InvokeServer("Playing") end
 print("\nenabled sitting out")
 print("\nhiding others...")
 spawn(function()
@@ -157,14 +174,24 @@ spawn(function()
     print("\nretardability error... rejoining...")
     lowest()
 end)
+function forceteleport(recursed, times)
+    if not times then times = 0 end
+    if not recursed then
+        print("@@BLUE@@")
+        print("\n"..'attempting to teleport...')
+    end
+    if not lowest() then 
+        print("@@BLUE@@")
+        print(string.format("\nteleport failed. reattempting... (%d)", times+1))
+        forceteleport(true, times+1) 
+    end
+end
 spawn(function()
     wait(mins*60)
-    print("@@BLUE@@")
-    print("\n"..'attempting to teleport')
-    lowest()
+    forceteleport()
 end)
 print('\ndone')
 print("@@BLUE@@")
-print(string.format("\nteleporting in %dm...", mins))
+print(string.format("\nteleporting in %sm...", tostring(mins)))
 
 
