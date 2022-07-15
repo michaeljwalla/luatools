@@ -22,7 +22,8 @@ function forceteleport(recursed, times)
         print("@@BLUE@@")
         print("\n"..'attempting to teleport...')
     end
-    if not lowest() then 
+    local err, reas = pcall(lowest)
+    if (not err) or (err and not reas) then 
         print("@@BLUE@@")
         print(string.format("\nteleport failed. reattempting... (%d)", times+1))
         forceteleport(true, times+1) 
