@@ -3,17 +3,16 @@ shared.indentity = (shared.identity and shared.identity+1) or 0
 local identity = shared.identity
 
 
-local mins = 15
+local mins = 0.1
 local print = rconsoleprint
 print("@@WHITE@@")
 print("\n\n"..os.date())
 while not game:IsLoaded() do wait() end
 if identity ~= shared.identity then  return end
-self = game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof_queue_recurse.lua")
 
 local queue = syn.queue_on_teleport or queue_on_teleport
 local rejoin = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/functions/smallest_server.lua"))
-lowest = function() queue(self) rejoin() end
+lowest = function()  rejoin() end
 function forceteleport(recursed, times)
     if identity ~= shared.identity then return end
     wait(1)
@@ -86,7 +85,8 @@ end
 game.Players.PlayerRemoving:Connect(function(v)
     if v == lp then
         print("@@GREEN@@")
-        print(string.format("\nc\nCurrent coins: %d\n",coins.Value))  
+        print(string.format("\nc\nCurrent coins: %d\n",coins.Value))
+        setclipboard(coins.Value)
     end
 end)
 if identity ~= shared.identity then print("\nduplicate detected. terminating...") return end
@@ -231,5 +231,4 @@ end)
 print('\ndone')
 print("@@BLUE@@")
 print(string.format("\nteleporting in %sm...", tostring(mins)))
-
 
