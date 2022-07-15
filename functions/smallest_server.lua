@@ -3,7 +3,8 @@ local TPS = game:GetService("TeleportService")
 
 local nextCursor, serverId;
 local minimum, current = math.huge, math.huge;
-
+self = game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof_queue_recurse.lua")
+local queue = syn.queue_on_teleport or queue_on_teleport
 repeat
     local Servers;
     if not nextCursor then
@@ -28,6 +29,7 @@ until not nextCursor
 
 if (serverId) then
     print("Teleporting to "..tostring(minimum).." Player Server!")
+    if queue then queue(self) end
     TPS:TeleportToPlaceInstance(game.PlaceId, serverId)
     return true
 else
