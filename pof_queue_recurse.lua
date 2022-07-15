@@ -18,7 +18,7 @@ end)
 print("\nset up anti-afk")
 if identity ~= shared.identity then  return end
 
-local queue = syn.queue_on_teleport or queue_on_teleport
+local queue = (syn and syn.queue_on_teleport) or queue_on_teleport
 local rejoin = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/functions/smallest_server.lua"))
 lowest = function()  rejoin() end
 function forceteleport(recursed, times)
