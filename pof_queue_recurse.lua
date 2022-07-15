@@ -3,8 +3,8 @@ shared.indentity = (shared.identity and shared.identity+1) or 0
 local identity = shared.identity
 
 
-local mins = shared.mins or 0.5
-shared.mins = mins
+local mins = 15--[[shared.mins or 0.5
+shared.mins = mins]]
 local print = rconsoleprint
 print("@@WHITE@@")
 print("\n\n"..os.date())
