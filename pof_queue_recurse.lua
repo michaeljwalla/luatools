@@ -23,17 +23,19 @@ local rejoin = loadstring(game:HttpGet("https://raw.githubusercontent.com/michae
 lowest = function()  rejoin() end
 function forceteleport(recursed, times)
     if identity ~= shared.identity then return end
-    wait(1)
     if not times then times = 0 end
     if not recursed then
         print("@@BLUE@@")
         print("\n"..'attempting to teleport...')
     end
     local err, reas = pcall(lowest)
-    if (not err) or (err and not reas) then 
-        print("@@BLUE@@")
-        print(string.format("\nteleport failed. reattempting... (%d)", times+1))
-        forceteleport(true, times+1) 
+    if (not err) or (err and not reas) then
+	if times % 5 == 1 then
+		print("@@BLUE@@")
+		print(string.format("\nteleport failed (this could also mean you're already in the smallest server). reattempting in 5s... (%d)", times+1))
+	end
+	wait(5)
+        forceteleport(true, times+1)
     end
 end
 
