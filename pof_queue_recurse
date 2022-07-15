@@ -1,5 +1,5 @@
 shared.retardabilityerror = false --DONT TOUCH
-shared.teleportfail = false
+
 local mins = shared.mins or 0.5
 local print = rconsoleprint
 print("@@WHITE@@")
