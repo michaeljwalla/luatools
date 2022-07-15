@@ -29,6 +29,7 @@ until not nextCursor
 if (serverId) then
     print("Teleporting to "..tostring(minimum).." Player Server!")
     TPS:TeleportToPlaceInstance(game.PlaceId, serverId)
+    return true
 else
-    warn("Couldn't find a server")
+    return false
 end
