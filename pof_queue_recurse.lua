@@ -2,17 +2,20 @@ shared.retardabilityerror = false --DONT TOUCH
 shared.indentity = (shared.identity and shared.identity+1) or 0
 local identity = shared.identity
 
---anti afk
-local vu = game:GetService("VirtualUser")
-game.Players.LocalPlayer.Idled:connect(function()
-	vu:CaptureController ()vu:ClickButton2(Vector2.new())
-end)
+
 
 local mins = 15
 local print = rconsoleprint
 print("@@WHITE@@")
 print("\n\n"..os.date())
+print("\nwaiting for game to load...")
 while not game:IsLoaded() do wait() end
+--anti afk
+local vu = game:GetService("VirtualUser")
+game.Players.LocalPlayer.Idled:connect(function()
+	vu:CaptureController ()vu:ClickButton2(Vector2.new())
+end)
+print("\nset up anti-afk")
 if identity ~= shared.identity then  return end
 
 local queue = syn.queue_on_teleport or queue_on_teleport
@@ -42,7 +45,20 @@ end
 
 print("\n"..'loaded  scripts')
 local lp = game.Players.LocalPlayer
-if not lp.Character then lp.CharacterAdded:Wait() end
+local respawn
+if lp.TeamColor ~= BrickColor.new("Mid gray") then 
+    print("\nleaving play area...")
+    if not lp.Character then lp.CharacterAdded:Wait() end
+    local h = lp.Character:WaitForChild("Humanoid",5)
+    if h then
+        h:TakeDamage(h.MaxHealth)
+        respawn = true
+    else do
+       print("\nunknown error resetting... continuing anyways.") 
+    end
+    end
+end
+if (not lp.Character or respawn) then lp.CharacterAdded:Wait() end
 if identity ~= shared.identity then  return end
 local hrp = lp.Character:WaitForChild("HumanoidRootPart", 5)
 if identity ~= shared.identity then print("\nduplicate detected. terminating...") return end
@@ -236,4 +252,3 @@ end)
 print('\ndone')
 print("@@BLUE@@")
 print(string.format("\nteleporting in %sm...", tostring(mins)))
-
