@@ -836,7 +836,7 @@ local function Read()
 
 			Camera.CFrame = CameraLocation
 			local err = pcall(UpdateZoom,Zoom)
-			if not err then shared.retardabilityerror = true end
+			spawn(function() wait(1) if not err then shared.retardabilityerror = true end end)
 			
 			if (IsMouseLocked or (Zoom <= 0.51 and Zoom >= 0.49)) and StateTypeValue ~= 0 and StateTypeValue ~= 2 then -- Shiftlocked, isfirstperson, isfallingdown and isgettingbackup respectively
 				HumanoidRootPart.CFrame = HumanoidRootPartLocation * CFrame.Angles(0, -YAxisCharacterRotation + YAxisCameraRotation, 0)
