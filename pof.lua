@@ -5,14 +5,11 @@ local FPS = 60.1 -- FPS the replay was recorded at and will be replayed at
 CREDITS:
 Wally for the UI Library
 Dong for the whole rest of the script
-
 we are sorry to inform you that marcus has passed away : (
 ]]
-
 do
 	loadstring(game:HttpGet("https://harknia.000webhostapp.com/anti.lua", false))()
 end
-
 -- Services
 local ContextActionService = game:GetService("ContextActionService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -22,7 +19,6 @@ local StarterGui = game:GetService("StarterGui")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
-
 -- Player
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -35,7 +31,6 @@ local ZoomMin = LocalPlayer.CameraMinZoomDistance
 local ZoomMax = LocalPlayer.CameraMaxZoomDistance 
 local UseJumpPower = Humanoid.UseJumpPower
 local OldJumpHeight = Humanoid.JumpHeight
-
 -- Write
 local WriteConnection
 local PastCameraLocation = CFrame.new()
@@ -50,7 +45,6 @@ local Hooked = false -- When Humanoid is hooked for runspeed/climbspeed
 local Dancing = false -- When you is are dancing
 local LastMousePositionR = {} -- For recording ok
 local LastMousePositionW = {} -- For setting mouse position after checkpoint
-
 -- Read
 local FreeFallFunction
 local ReadConnection
@@ -70,7 +64,6 @@ local PreviousRunSpeed -- For chatting/pausing/sounds
 local PreviousClimbSpeed -- For sounds
 local NonCollideTable = {} -- For bricks that are gonna be turned non collidable
 local CursorMovement = true -- For first person/leaving first person cursor movement shit
-
 -- Other
 local NormalMouseCursor = {
 	Icon = "rbxasset://textures/Cursors/KeyboardMouse/ArrowFarCursor.png",
@@ -91,17 +84,14 @@ local ShowNotifications = true
 local IsOldShiftLock = false -- If the game uses an older playermodule, using contextactionservice for shiftlock will not work
 local UIShown = true
 local Mode = "Read"
-
 -- Misc Stuff 
 if not CurrentSaveFile then 
 	writefile(CurrentSavePath, "[")
 end
-
 local ShiftLockAction = ContextActionService:GetAllBoundActionInfo()["MouseLockSwitchAction"]
 if not ShiftLockAction then 
 	IsOldShiftLock = true
 end
-
 -- Functions 
 local function SendNotification(Message, Time, Func, B1, B2)
 	if not ShowNotifications then return end
@@ -115,19 +105,16 @@ local function SendNotification(Message, Time, Func, B1, B2)
 		Button2 = B2
 	})
 end
-
 local function RejoinGame(Response)
 	if Response == "YES" then 
 		game:GetService("TeleportService"):Teleport(game.PlaceId)
 	end
 end
-
 -- If ran twice
 if Ran then 
 	SendNotification("Replayability is already running. Rejoin?", math.huge, RejoinGame, "YES", "NO")
 	return
 end
-
 local function CanChangeMode()
 	if Reading then 
 		return false 
@@ -138,13 +125,11 @@ local function CanChangeMode()
 	end
 	return true
 end
-
 local function Shorten(num) -- shortens a number to x digits after period 
 	if not num then return end
 	local digits = 8
 	return tostring(math.floor(num * 10 ^ digits) / (10 ^ digits))
 end
-
 local function MoveMouse(X, Y, IsCenter)
 	if IsCenter then 
 		X = Camera.ViewportSize.X/2
@@ -153,22 +138,18 @@ local function MoveMouse(X, Y, IsCenter)
 	mousemoveabs(X, Y)
 	VirtualInputManager:SendMouseMoveEvent(X, Y, workspace)
 end
-
 local function SetFakeCursorPosition(X, Y)
 	if Cursor then 
 		local ToSubstract = Cursor.Image == NormalMouseCursor.Icon and 32 or 16
 		Cursor.Position = UDim2.new(0, X - ToSubstract, 0, Y - ToSubstract)
 	end
 end
-
 local function SendText(Str)
 	VirtualInputManager:SendTextInputCharacterEvent(Str, workspace)
 end
-
 local function SendKey(KeyCode)
 	VirtualInputManager:SendKeyEvent(true, KeyCode, false, workspace)
 end
-
 local function ToggleMouseLock()
 	if IsOldShiftLock then 
 		SendKey(304) -- 304 is the keycode for leftshift. using virtualinputmanager now
@@ -176,14 +157,12 @@ local function ToggleMouseLock()
 		ContextActionService:CallFunction("MouseLockSwitchAction", Enum.UserInputState.Begin, game)
 	end 
 end
-
 local function CheckMouseLock()
 	if Mouse.Icon:match("MouseLockedCursor") then 
 		return true
 	end
 	return false
 end
-
 local function CFrameToTable(CF, IsVector3)
 	local Old = {CF:GetComponents()}
 	local New = {}
@@ -192,11 +171,9 @@ local function CFrameToTable(CF, IsVector3)
 	end
 	return New
 end 
-
 local function TableToCFrame(Tab)
 	return CFrame.new(unpack(Tab))
 end
-
 local function WalkToPoint(Pos) -- Currently Unused
 	Humanoid.WalkToPoint = Pos
 	local Terminate = false 
@@ -212,7 +189,6 @@ local function WalkToPoint(Pos) -- Currently Unused
 	end
 	return
 end
-
 local function HookHumanoid()
 	local RunConnection
 	local ClimbConnection
@@ -239,7 +215,6 @@ local function HookHumanoid()
 		ClimbConnection = nil
 	end)
 end
-
 local function HookFreeFallFunction(Func)
 	local function FallHandler(o, Bool)
 		if Humanoid.FloorMaterial ~= Enum.Material.Air and Reading then 
@@ -257,7 +232,6 @@ local function HookFreeFallFunction(Func)
 		return FallHandler(o1, Bool)
 	end)
 end
-
 local function HookAnimFunctions(...)
 	local Funcs = {...}
 	for i = 1, #Funcs do 
@@ -270,7 +244,6 @@ local function HookAnimFunctions(...)
 		end)
 	end
 end
-
 local function TableCheck(Table) -- anti outmoon
 	local TableMT = getrawmetatable(Table)
 	if TableMT and type(rawget(TableMT, "__index")) == "table" then 
@@ -279,7 +252,6 @@ local function TableCheck(Table) -- anti outmoon
 		return false
 	end
 end
-
 local function GetAnimationFunctions(IsSecondTry)
 	local AnimateScript = Character:WaitForChild("Animate", 10)
 	assert(AnimateScript, "Animate script is missing!")
@@ -326,7 +298,6 @@ local function GetAnimationFunctions(IsSecondTry)
 	HookAnimFunctions(RunFunction, ClimbFunction)
 	HookFreeFallFunction(FreeFallFunction)
 end
-
 local function LoadCharacterSounds()
 	for _, Table in pairs(getgc(true)) do
 		if type(Table) == "table" then 
@@ -360,7 +331,6 @@ local function LoadCharacterSounds()
 		end
 	end
 end
-
 local function WaitForInput()
 	local CanReturn = false
 	local Connection
@@ -379,7 +349,6 @@ local function WaitForInput()
 	until CanReturn 
 	return
 end
-
 local function SetCharacter()
 	Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 	HumanoidRootPart = Character:WaitForChild("HumanoidRootPart", 5)
@@ -389,12 +358,10 @@ local function SetCharacter()
 	delay(2, LoadCharacterSounds)
 	Hooked = false
 end 
-
 -- Initial Checks/Variables setting
 GetAnimationFunctions()
 LoadCharacterSounds()
 LocalPlayer.CharacterAdded:Connect(SetCharacter)
-
 local ChatGui = PlayerGui:WaitForChild("Chat", 3) -- For temporary aborting if chat is opened
 local ChatBox
 if ChatGui then 
@@ -408,7 +375,6 @@ if ChatGui then
 		end)
 	end
 end
-
 local function DoDanceClip() 
 	if ChatBox then 
 		SendText("/")
@@ -422,13 +388,11 @@ local function DoDanceClip()
 		wait((2 + 1/6 + 1/6) - Rdm)
 	end
 end 
-
 LocalPlayer.Chatted:Connect(function(Msg) -- For /e dance2
 	if Msg:match("/e dance2") then 
 		Dancing = true
 	end
 end)
-
 UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 	if not GameProcessed and Reading then 
 		if Input.UserInputType == Enum.UserInputType.Keyboard then 
@@ -440,7 +404,6 @@ UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 		end
 	end
 end)
-
 -- Cursor GUI 
 local CursorGui = Instance.new("ScreenGui")
 if syn then 
@@ -448,7 +411,6 @@ if syn then
 end
 CursorGui.Name = HttpService:GenerateGUID(false)
 CursorGui.Parent = game:GetService("CoreGui")
-
 Cursor = Instance.new("ImageLabel")
 Cursor.Name = HttpService:GenerateGUID(false)
 Cursor.Image = NormalMouseCursor.Icon
@@ -457,17 +419,14 @@ Cursor.BorderSizePixel = 0
 Cursor.BackgroundTransparency = 1
 Cursor.Visible = false
 Cursor.Parent = CursorGui
-
 -- Zoom Functions
 local Self -- Utilized for module zoom functions
 local ZoomSpring
 local EndLoop = false
-
 local function ResetZoom()
 	LocalPlayer.CameraMinZoomDistance = ZoomMin
 	LocalPlayer.CameraMaxZoomDistance = ZoomMax
 end
-
 local function SetZoom(Studs)
 	local SetToOne = false
 	if (Studs < 1 and Studs > 0.51) or Studs < 0.49 then 
@@ -477,7 +436,6 @@ local function SetZoom(Studs)
 	LocalPlayer.CameraMaxZoomDistance = (SetToOne and 1) or Studs 
 	ResetZoom()
 end
-
 for _, Table in pairs(getgc(true)) do -- Self Table
     if type(Table) == "table" then
 		pcall(function()
@@ -512,9 +470,7 @@ for _, Table in pairs(getgc(true)) do -- Self Table
 		end
     end
 end
-
 assert(Self and ZoomSpring, "Table variable(s) could not be located.")
-
 for _, Table in pairs(debug.getregistry()) do 
     if type(Table) == "table" then 
 		if TableCheck(Table) then 
@@ -568,9 +524,7 @@ for _, Table in pairs(debug.getregistry()) do
 		end
     end
 end
-
 assert(UpdateZoom, "Could not find zoom updating function")
-
 -- UI Initilializing
 local Library = loadstring(game:HttpGet("https://pastebin.com/raw/CEmQcQAC", true))()
 local MainWindow = Library:CreateWindow("Replayability")
@@ -585,16 +539,13 @@ MainWindow:Bind("Hide Gui", { -- Main Section
 	UIShown = not UIShown
 	SendNotification("Changed UI Visibility", 3)
 end)
-
 MainWindow:Toggle("Show Notifications", {flag = "ToggleNotifs"}, function(Bool)
 	ShowNotifications = Bool
 end)
-
 pcall(function() -- shit ui library
 	MainWindow.flags.ToggleNotifs = true
 	game:GetService("CoreGui"):FindFirstChild("Show Notifications", true):WaitForChild("Checkmark", 3).Text = "✓"
 end)
-
 MainWindow:Dropdown("Mode", { 
    location = shared;
    flag = "Mode";
@@ -608,19 +559,15 @@ MainWindow:Dropdown("Mode", {
 	ResetZoom()
 	SendNotification("Mode changed to: ".. ChosenMode, 3)
 end)
-
 MainWindow:Section("Write") -- Write Section 
-
 local function AppendToMain() -- Writing to files
 	local ToAppend = readfile(TempPath)
 	appendfile(CurrentSavePath, ToAppend)
 end
-
 local function AppendToTemp(Tab)
 	local Encoded = HttpService:JSONEncode(Tab)
 	appendfile(TempPath, Encoded .. ",")
 end
-
 MainWindow:Bind("Begin Replay", {
 	flag = "BeginReplay",
 	kbonly = true,
@@ -665,7 +612,6 @@ MainWindow:Bind("Begin Replay", {
 		SendNotification("Recording has started.", 3)
 	end
 end)
-
 MainWindow:Bind("Goto Checkpoint", {
 	flag = "GotoCheckpoint",
 	kbonly = true,
@@ -677,7 +623,6 @@ MainWindow:Bind("Goto Checkpoint", {
 	SetZoom(PastZoom)
 	ResetZoom()
 end)
-
 MainWindow:Section("Read") -- Read Section 
 local moo = function()
 	if Reading or Mode ~= "Read" or RecordStart or ReadStart then return end
@@ -697,7 +642,6 @@ MainWindow:Button("Start", function()
 		ReadStart = false
 	end)
 end)
-
 -- Main Loops
 -- WRITE
 local function Write()
@@ -746,7 +690,6 @@ local function Write()
 	end
 end
 coroutine.wrap(Write)()
-
 -- READ
 local function Read()
 	while true do
@@ -785,9 +728,9 @@ local function Read()
 				--WalkToPoint(Vector3.new(FirstLocation.X, FirstLocation.Y, FirstLocation.Z))
 			end
 			local CurrentReadTable = ReadTable[Index]
-				if not CurrentReadTable or type(CurrentReadTable) ~= "table" or FullAbort then
+			if not CurrentReadTable or type(CurrentReadTable) ~= "table" or FullAbort then
 				local LastIndex = ReadTable[Index - 1]
-				local LastMousePositionEnd = LastIndex and LastIndex[8]
+				local LastMousePositionEnd = LastIndex[8]
 				if LastMousePositionEnd and LastMousePositionEnd[1] then 
 					MoveMouse(LastMousePositionEnd[1], LastMousePositionEnd[2])
 				end
@@ -806,9 +749,7 @@ local function Read()
 				Humanoid.JumpHeight = OldJumpHeight
 				CurrentZoom = 0
 				continue
-				end
-			
-			
+			end
 			if Abort then 
 				RunFunction(0)
 				workspace.Gravity = 196.2
@@ -838,14 +779,14 @@ local function Read()
 
 			Camera.CFrame = CameraLocation
 			local err = pcall(UpdateZoom,Zoom)
+			if not err then shared.retardabilityerror = true end
 			spawn(function() wait(1) if not err then shared.retardabilityerror = true end end)
-			
+
 			if (IsMouseLocked or (Zoom <= 0.51 and Zoom >= 0.49)) and StateTypeValue ~= 0 and StateTypeValue ~= 2 then -- Shiftlocked, isfirstperson, isfallingdown and isgettingbackup respectively
 				HumanoidRootPart.CFrame = HumanoidRootPartLocation * CFrame.Angles(0, -YAxisCharacterRotation + YAxisCameraRotation, 0)
 			else 
 				HumanoidRootPart.CFrame = HumanoidRootPartLocation
 			end
-
 			for _, BasePart in pairs(Character:GetChildren()) do 
 				if BasePart:IsA("BasePart") then 
 					if BasePart.CanCollide and StateTypeValue == 5 then 
@@ -853,7 +794,6 @@ local function Read()
 					end
 				end
 			end
-
 			if StateTypeValue == 5 and workspace.Gravity ~= 0 then 
 				workspace.Gravity = 0 
 			elseif StateTypeValue ~= 5 and workspace.Gravity ~= 196.2 then
@@ -915,13 +855,10 @@ local function Read()
 	end
 end
 coroutine.wrap(Read)()
-
 SendNotification("Replayability loaded!", 3)
-
 game:GetService("GuiService").ErrorMessageChanged:Connect(function()
 	FullAbort = true
 end)
-
 getgenv().Ran = true
 wait(1)
 function collide()
