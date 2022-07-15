@@ -80,8 +80,8 @@ if not hum then
     return
 end
 print("\n"..'loaded humanoid')
-local settings,playing = lp:WaitForChild("Settings",5)
-if settings then playing = settings:WaitForChild("Playing",10) end
+local settings,playing = lp:WaitForChild("Settings",15)
+if settings then playing = settings:WaitForChild("Playing",5) end
 if not playing then
     print("@@RED@@")
     print("\n"..'couldnt find playvalue, rejoining...')
