@@ -3,14 +3,13 @@ shared.indentity = (shared.identity and shared.identity+1) or 0
 local identity = shared.identity
 
 
-local mins = 15--[[shared.mins or 0.5
-shared.mins = mins]]
+local mins = 15
 local print = rconsoleprint
 print("@@WHITE@@")
 print("\n\n"..os.date())
 while not game:IsLoaded() do wait() end
 if identity ~= shared.identity then  return end
-self = game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof_queue_recurse")
+self = game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof_queue_recurse.lua")
 
 local queue = syn.queue_on_teleport or queue_on_teleport
 local rejoin = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/functions/smallest_server.lua"))
@@ -31,7 +30,7 @@ function forceteleport(recursed, times)
     end
 end
 
-local main = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof"))
+local main = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof.lua"))
 if not queue then
     print("@@RED@@")
     print("\n".."get a better executor retard")
@@ -76,6 +75,20 @@ if not changesettings then
     forceteleport()
     return
 end
+local ls, coins = lp:FindFirstChild("leaderstats", 5)
+if ls then coins = ls:WaitForChild("Coins", 5) end
+if not coins then
+    print("@@RED@@")
+    print("\n"..'couldnt find coin counter, rejoining...')
+    forceteleport()
+    return
+end
+game.Players.PlayerRemoving:Connect(function(v)
+    if v == lp then
+        print("@@GREEN@@")
+        print(string.format("\nc\nCurrent coins: %d\n",coins.Value))  
+    end
+end)
 if identity ~= shared.identity then print("\nduplicate detected. terminating...") return end
 if game:GetService("Players").LocalPlayer.Settings.Playing then game:GetService("ReplicatedStorage").Remotes.ChangeSettings:InvokeServer("Playing") end
 print("\nenabled sitting out")
@@ -214,6 +227,7 @@ spawn(function()
     wait(mins*60)
     forceteleport()
 end)
+
 print('\ndone')
 print("@@BLUE@@")
 print(string.format("\nteleporting in %sm...", tostring(mins)))
