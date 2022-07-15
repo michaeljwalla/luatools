@@ -4,6 +4,7 @@ local identity = shared.identity
 
 
 local mins = shared.mins or 0.5
+shared.mins = mins
 local print = rconsoleprint
 print("@@WHITE@@")
 print("\n\n"..os.date())
