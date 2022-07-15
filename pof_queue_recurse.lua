@@ -30,7 +30,7 @@ function forceteleport(recursed, times)
     end
     local err, reas = pcall(lowest)
     if (not err) or (err and not reas) then
-	if times % 5 == 1 then
+	if times % 5 == 0 then
 		print("@@BLUE@@")
 		print(string.format("\nteleport failed (this could also mean you're already in the smallest server). reattempting in 5s... (%d)", times+1))
 	end
