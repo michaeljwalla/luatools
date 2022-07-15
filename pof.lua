@@ -785,8 +785,8 @@ local function Read()
 				--WalkToPoint(Vector3.new(FirstLocation.X, FirstLocation.Y, FirstLocation.Z))
 			end
 			local CurrentReadTable = ReadTable[Index]
-			local safecall = pcall(function()
 				if not CurrentReadTable or type(CurrentReadTable) ~= "table" or FullAbort then
+				local safecall = pcall(function()
 					local LastIndex = ReadTable[Index - 1]
 					local LastMousePositionEnd = LastIndex[8]
 					if LastMousePositionEnd and LastMousePositionEnd[1] then 
@@ -806,10 +806,12 @@ local function Read()
 					Humanoid.UseJumpPower = UseJumpPower -- Sets it to whatever the game set it to by default
 					Humanoid.JumpHeight = OldJumpHeight
 					CurrentZoom = 0
-					continue
+				end)
+				spawn(function() wait(1) if not safecall then shared.retardabilityerror = true end)
+				continue
 				end
-			end)
-			spawn(function() wait(1) if not safecall then shared.retardabilityerror = true end)
+			
+			
 			if Abort then 
 				RunFunction(0)
 				workspace.Gravity = 196.2
