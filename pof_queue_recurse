@@ -1,4 +1,4 @@
-local mins = shared.mins or 15
+local mins = shared.mins or 0.5
 local print = rconsoleprint
 print("@@WHITE@@")
 print("\n\n"..os.date())
@@ -6,13 +6,15 @@ while not game:IsLoaded() do wait() end
 self = game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof_queue_recurse")
 
 local queue = syn.queue_on_teleport or queue_on_teleport
-local lowest = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/functions/smallest_server.lua"))
+local rejoin = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/functions/smallest_server.lua"))
+lowest = function() queue(self) rejoin() end
+
 local main = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof"))
 if not queue then
     print("@@RED@@")
     print("\n".."get a better executor retard")
 end
-queue(self)
+
 print("\n"..'loaded  scripts')
 local lp = game.Players.LocalPlayer
 if not lp.Character then lp.CharacterAdded:Wait() end
@@ -32,9 +34,10 @@ if not hum then
     return
 end
 print("\n"..'loaded humanoid')
-game:GetService("ReplicatedStorage").Remotes.ChangeSettings:InvokeServer("Playing")
+
+if not lp.TeleportedIn then game:GetService("ReplicatedStorage").Remotes.ChangeSettings:InvokeServer("Playing") end
 print("\nenabled sitting out")
-print("\n hiding others...")
+print("\nhiding others...")
 spawn(function()
     while wait() do
         for i,v in pairs(game.Players:GetPlayers()) do
@@ -146,15 +149,22 @@ if (hrp.Position-game:GetService("Workspace").Lobby.Obbies.ObbyTeleporter.Telepo
 else do hrp.CFrame = CFrame.new(Vector3.new(-10000, 8, -5))end end
 print("\nbrought to obby.")
 
+spawn(main)
+print("\nloaded replayability")
 spawn(function()
-    local err = pcall(main)
-    if err then print("@@RED@@") print("\n"..'retardability error, attempting to reload')lowest() end 
+    while not shared.retardabilityerror do wait() end
+    print("@@RED@@")
+    print("\nretardability error... rejoining...")
+    lowest()
 end)
 spawn(function()
     wait(mins*60)
-    print("@@blue@@")
+    print("@@BLUE@@")
     print("\n"..'attempting to teleport')
     lowest()
 end)
-print('done')
+print('\ndone')
+print("@@BLUE@@")
+print(string.format("\nteleporting in %dm...", mins))
+
 
