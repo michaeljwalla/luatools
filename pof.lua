@@ -807,7 +807,7 @@ local function Read()
 					Humanoid.JumpHeight = OldJumpHeight
 					CurrentZoom = 0
 				end)
-				spawn(function() wait(1) if not safecall then shared.retardabilityerror = true end)
+				spawn(function() wait(1) if not safecall then shared.retardabilityerror = true end end)
 				continue
 				end
 			
