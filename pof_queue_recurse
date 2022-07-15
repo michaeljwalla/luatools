@@ -1,1 +1,29 @@
-return
+local mins = shared.mins or 15
+
+while not game:IsLoaded() do wait() end
+self = game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof_queue_recurse")
+local queue = syn.queue_on_teleport or queue_on_teleport
+local lowest = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/functions/smallest_server.lua"))
+local main = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof"))
+assert(queue, "get a better executor retard")
+
+local lp = game.Players.LocalPlayer
+if not lp.Character then lp.CharacterAdded:Wait() end
+local hrp = lp.Character:WaitForChild("HumanoidRootPart", 5)
+assert(hrp, 'couldnt find HumanoidRootPart')
+local door = game:GetService("Workspace").Lobby.Obbies.ObbyTeleporter.Teleport
+
+while (hrp.Position - Vector3.new(-10002.55664063,7.99999856,-6.12408972)).Magnitude > 20 do 
+    wait()
+    firetouchinterest(hrp, door, 0)
+    firetouchinterest(hrp,door,1)
+end
+queue(self)
+spawn(function()
+    local err = pcall(main)
+    if err then lowest() end 
+end)
+spawn(function()
+    wait(mins*60)
+    lowest()
+end)
