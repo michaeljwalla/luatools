@@ -2,6 +2,11 @@ shared.retardabilityerror = false --DONT TOUCH
 shared.indentity = (shared.identity and shared.identity+1) or 0
 local identity = shared.identity
 
+--anti afk
+local vu = game:GetService("VirtualUser")
+game.Players.LocalPlayer.Idled:connect(function()
+	vu:CaptureController ()vu:ClickButton2(Vector2.new())
+end)
 
 local mins = 15
 local print = rconsoleprint
