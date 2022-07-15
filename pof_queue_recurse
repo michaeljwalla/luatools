@@ -14,6 +14,20 @@ self = game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/ma
 local queue = syn.queue_on_teleport or queue_on_teleport
 local rejoin = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/functions/smallest_server.lua"))
 lowest = function() queue(self) rejoin() end
+function forceteleport(recursed, times)
+    if identity ~= shared.identity then return end
+    wait(1)
+    if not times then times = 0 end
+    if not recursed then
+        print("@@BLUE@@")
+        print("\n"..'attempting to teleport...')
+    end
+    if not lowest() then 
+        print("@@BLUE@@")
+        print(string.format("\nteleport failed. reattempting... (%d)", times+1))
+        forceteleport(true, times+1) 
+    end
+end
 
 local main = loadstring(game:HttpGet("https://raw.githubusercontent.com/michaeljwalla/luatools/main/pof"))
 if not queue then
@@ -30,7 +44,7 @@ if identity ~= shared.identity then print("\nduplicate detected. terminating..."
 if not hrp then
     print("@@RED@@")
     print("\n"..'couldnt find HumanoidRootPart, rejoining')
-    lowest()
+    forceteleport()
     return
 end
 print("\n"..'loaded hrp')
@@ -39,7 +53,7 @@ if identity ~= shared.identity then print("\nduplicate detected. terminating..."
 if not hum then
     print("@@RED@@")
     print("\n"..'couldnt find Humanoid, rejoining')
-    lowest()
+    forceteleport()
     return
 end
 print("\n"..'loaded humanoid')
@@ -48,7 +62,7 @@ if settings then playing = settings:WaitForChild("Playing",10) end
 if not playing then
     print("@@RED@@")
     print("\n"..'couldnt find playvalue, rejoining...')
-    lowest()
+    forceteleport()
     return
 end
 local remotes, changesettings = game.ReplicatedStorage:WaitForChild("Remotes", 5)
@@ -57,7 +71,7 @@ if identity ~= shared.identity then print("\nduplicate detected. terminating..."
 if not changesettings then
     print("@@RED@@")
     print("\n"..'couldnt find sit-out function, rejoining...')
-    lowest()
+    forceteleport()
     return
 end
 if identity ~= shared.identity then print("\nduplicate detected. terminating...") return end
@@ -191,22 +205,9 @@ spawn(function()
     while not shared.retardabilityerror do wait()if identity ~= shared.identity then return end end
     print("@@RED@@")
     print("\nretardability error... rejoining...")
-    lowest()
+    forceteleport()
 end)
-function forceteleport(recursed, times)
-    if identity ~= shared.identity then return end
-    wait(1)
-    if not times then times = 0 end
-    if not recursed then
-        print("@@BLUE@@")
-        print("\n"..'attempting to teleport...')
-    end
-    if not lowest() then 
-        print("@@BLUE@@")
-        print(string.format("\nteleport failed. reattempting... (%d)", times+1))
-        forceteleport(true, times+1) 
-    end
-end
+
 spawn(function()
     wait(mins*60)
     forceteleport()
