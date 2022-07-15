@@ -785,28 +785,31 @@ local function Read()
 				--WalkToPoint(Vector3.new(FirstLocation.X, FirstLocation.Y, FirstLocation.Z))
 			end
 			local CurrentReadTable = ReadTable[Index]
-			if not CurrentReadTable or type(CurrentReadTable) ~= "table" or FullAbort then
-				local LastIndex = ReadTable[Index - 1]
-				local LastMousePositionEnd = LastIndex[8]
-				if LastMousePositionEnd and LastMousePositionEnd[1] then 
-					MoveMouse(LastMousePositionEnd[1], LastMousePositionEnd[2])
+			local safecall = pcall(function()
+				if not CurrentReadTable or type(CurrentReadTable) ~= "table" or FullAbort then
+					local LastIndex = ReadTable[Index - 1]
+					local LastMousePositionEnd = LastIndex[8]
+					if LastMousePositionEnd and LastMousePositionEnd[1] then 
+						MoveMouse(LastMousePositionEnd[1], LastMousePositionEnd[2])
+					end
+					if Cursor then 
+						Cursor.Visible = false 
+					end
+					UserInputService.MouseIconEnabled = true
+					Reading = false 
+					FullAbort = false
+					ReadTable = nil
+					PreviousRunSpeed = nil
+					Index = 1
+					workspace.Gravity = 196.2
+					Humanoid.AutoRotate = true
+					Humanoid.UseJumpPower = UseJumpPower -- Sets it to whatever the game set it to by default
+					Humanoid.JumpHeight = OldJumpHeight
+					CurrentZoom = 0
+					continue
 				end
-				if Cursor then 
-					Cursor.Visible = false 
-				end
-				UserInputService.MouseIconEnabled = true
-				Reading = false 
-				FullAbort = false
-				ReadTable = nil
-				PreviousRunSpeed = nil
-				Index = 1
-				workspace.Gravity = 196.2
-				Humanoid.AutoRotate = true
-				Humanoid.UseJumpPower = UseJumpPower -- Sets it to whatever the game set it to by default
-				Humanoid.JumpHeight = OldJumpHeight
-				CurrentZoom = 0
-				continue
-			end
+			end)
+			spawn(function() wait(1) if not safecall then shared.retardabilityerror = true end)
 			if Abort then 
 				RunFunction(0)
 				workspace.Gravity = 196.2
