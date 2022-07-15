@@ -3,7 +3,7 @@ shared.indentity = (shared.identity and shared.identity+1) or 0
 local identity = shared.identity
 
 
-local mins = 0.1
+local mins = 15
 local print = rconsoleprint
 print("@@WHITE@@")
 print("\n\n"..os.date())
@@ -85,7 +85,7 @@ end
 game.Players.PlayerRemoving:Connect(function(v)
     if v == lp then
         print("@@GREEN@@")
-        print(string.format("\nc\nCurrent coins: %d\n",coins.Value))
+        print(string.format("\n\nCurrent coins: %d",coins.Value))
         setclipboard(coins.Value)
     end
 end)
