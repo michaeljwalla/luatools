@@ -869,7 +869,7 @@ function collide()
 end
 local middle = Vector3.new(-10002.55664063,7.99999856,-6.12408972)
 local reward = game:GetService("Workspace").Lobby.Obbies.Map.Normal.Reward
-local coins = game:GetService("Players")["The_B3lluminati"].leaderstats.Coins
+local coins = game:GetService("Players").LocalPlayer.leaderstats.Coins
 game.Players.PlayerRemoving:Connect(function(v)
     if v ~= game.Players.LocalPlayer then return end
     setclipboard(coins.Value)
