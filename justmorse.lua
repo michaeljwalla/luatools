@@ -75,6 +75,7 @@ local function aparse(num)
     return res
 end
 local function to(str)
+    str = tostring(str)
     local res = ""
     for i = 1, #str do
         local s, lw = str:sub(i,i), 0
