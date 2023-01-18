@@ -19,11 +19,29 @@ local function tf(tbl, item)
     end
    return 
 end
+local function split (inputstr, sep)
+        if sep == nil then
+                sep = "%s"
+        end
+        local t={}
+        local s = "([^"..sep.."]+)"
+        for str in string.gmatch(inputstr, s) do
+            table.insert(t, str)
+        end
+        return t
+end
+local function totalsplit(str)
+    local n = {}
+    for i = 1, #str do table.insert(n, str:sub(i,i)) end
+    return n
+end
 local function let(str)
-    str = tostring(str):split""
+    str = totalsplit(tostring(str))
     local res
     pcall(function()
         local st = tree
+        
+        
         for i = 1, #str do
             local s = tonumber(tf(info, b(str[i])))
             local off = 0
@@ -36,11 +54,10 @@ local function let(str)
     end)
     return res
 end
-local function parse(tbl)
+local function parse(tbl, cc)
     if (type(tbl) == 'string') then
-        tbl = tbl:reverse():gsub("\n.*$", ""):reverse()    
+        tbl = split(tbl:reverse():gsub("\n.*$", ""):reverse(), "\3")
     end
-    tbl = type(tbl) == 'table' or tbl:split'\3'
     local result = ''
     for i,v in next, tbl do result = result..let(v) end
     return result
@@ -50,8 +67,9 @@ local function aparse(num)
     local res = ""
     for i = 1, #num do
         local n = tonumber(num:sub(i,i))
-        if not (n and info[n]) then continue end
-        res = res..c(info[n])
+        if (n and info[n]) then
+            res = res..c(info[n])
+        end
     end
     return res
 end
@@ -61,19 +79,18 @@ local function to(str)
         local s, lw = str:sub(i,i), 0
         local ce = b(s)
         if (s:upper() ~= s) then lw = 1 ce = ce - 32 end 
-        if not arctree[ce] then continue end
-        res = res.."\3"..aparse(arctree[ce] + lw)
+        if arctree[ce] then
+            res = res.."\3"..aparse(arctree[ce] + lw)
+        end
     end
     return res:sub(2)
 end
-return {
-    Read = function(a)
-        local n, res = pcall(parse, a)
-        return n and res
-    end,
+local module = {
+    Read = parse,
     Convert = function(a)
         local n, res = pcall(to, a)
         assert(n, "Invalid conversion format. Did you forget a [ \\n / .Convert() ]?")
         return res
     end
 }
+return module
