@@ -103,8 +103,8 @@ local function to(str)
     return res:sub(2)
 end
 local module = {
-    Read = parse,
-    Convert = function(a)
+    Decode = parse,
+    Encode = function(a)
         local n, res = pcall(to, tostring(a))
         assert(n, "Invalid conversion format. Did you forget a [ \\n / .Convert() ]?")
         return res
