@@ -93,4 +93,4 @@ local module = {
         return res
     end
 }
-return module
+return module, info
