@@ -241,12 +241,14 @@ local tableencode,tabledecode = (function()
 end)()
 local module = {
     Decode = function(a)
+        local ax, ay = pcall(parse, a)
+        local x,y = (ax and ay) or pcall(tabledecode, a)
         return type(a) == 'table' and tabledecode(a) or parse(a)
     end,
     Encode = function(a)
         local ax, ay = pcall(to, a)
-        local x,y = pcall(tableencode, a)
-        return assert(ax or x, "Unknown") and (ax and ay) or (x and y)
+        local x,y = (ax and ay) or pcall(tableencode, a)
+        return assert(x, "Unknown") and (x and y)
     end
 }
 return module, info
