@@ -108,12 +108,143 @@ local function to(str)
     end
     return res:sub(2)
 end
+
+local tableencode,tabledecode = (function() 
+    local types = {
+        k = 17, --key: before, value: after
+        e = 18, --table
+        ee = 22, --exit table scope
+        ea = 23, --exit value-read (non table)
+        n = 30, --num
+        s = 27, --string
+        c = 4, --comma (table values)
+    }
+    local function split(str, splt)
+        local new = {}
+        for v in str:gmatch(("([^%s]*)"):format(splt)) do table.insert(new, v) end
+        return new
+    end
+    local function countscope(line)
+        if true then return 0, line end
+        local i = 0
+        line = line:gsub("\t", function() i = i + 1 return "" end)
+        return i, line
+    end
+    local function find(tbl, val)
+        for i,v in next, tbl do if v == val then return i end end
+        return
+    end
+    local ch, by = string.char, string.byte
+    local function isescape(str)
+        local ind = find(types, by(str))
+        return ind and type(ind) == 'string' and ind
+    end
+    local function csplit(str)
+        local x = {}
+        local spillover = ""
+        local scope = 0
+        for i in str:gmatch("[^"..ch(types.c).."]+") do
+            local a1, a2 = #spillover > 0, i:find("^"..ch(types.e))
+            if a1 or a2 then
+                if a2 then scope = scope + 1 end
+                spillover = spillover..(a1 and ch(types.c) or "")..i
+                if not i:reverse():find("^"..ch(types.ee)) then continue end
+                scope = scope - 1
+                if (scope ~= 0) then continue end
+                i = spillover
+                spillover = ""
+            end
+            table.insert(x, i)
+        end
+        return x
+    end
+    local comma = ch(types.c)
+    local function decode(str, recursed)
+        local str = type(str) == 'table' and str or csplit(str) --FOUND ISSUE: SPLITTING INSIDE OF NESTED TABLES!! FIX REGEX
+        --probably will need to write own.
+        local new = {}
+        inscope = inscope or {open = 1, closed = 0}
+        for i,v in next, str do
+            local scope, data = countscope(v)
+            assert(scope + inscope.open <= inscope.closed + 1, 'Invalid scope.')
+            --inscope.open = inscope.open + 1 --tables not supported yet
+            local type = isescape(data)
+            data = data:sub(2,-1) --remove identifier
+            if rawequal(type, "n") then
+                local _start, _end = data:find(ch(types.k))
+                assert(_start, "Invalid key.")
+                local key = mc.Decode(data:sub(1, _end-1))
+                local ending = data:find(ch(types.ea))
+                assert(ending, "Read left open for key: "..key)
+                local value = tonumber(mc.Decode(data:sub(_end+1, ending - 1)))
+                assert(value, "Invalid double for key: "..key)
+
+                new[
+                    tonumber(key) and tonumber(key) or key
+                    ] = value
+            elseif rawequal(type, "s") then
+                local _start, _end = data:find(ch(types.k))
+                assert(_start, "Invalid key.")
+                local key = mc.Decode(data:sub(1, _end-1))
+                local ending = data:find(ch(types.ea))
+                assert(ending, "Read left open for key: "..key)
+                local value = mc.Decode(data:sub(_end+1, ending - 1))
+                new[
+                    tonumber(key) and tonumber(key) or key
+                    ] = value
+            elseif rawequal(type, "e") then
+                local _start, _end = data:find(ch(types.k))
+                assert(_start, "Invalid key.")
+                local key = mc.Decode(data:sub(1, _end-1))
+                local ending = data:reverse():find(ch(types.ee)) --last index of closetbl
+                assert(ending, "Unclosed table for key: "..key)
+                ending = #data - ending
+                local newtblstr = data:sub(_end+1, ending)
+                if #newtblstr == 0 then continue end
+                local value = decode(newtblstr, true)
+                new[
+                    tonumber(key) and tonumber(key) or key
+                    ] = value
+            else
+                error"Invalid decode format."
+            end
+        end
+        return new
+    end
+    local function encode(tbl, nocycles, recursed)
+        recursed = (recursed or 0) + 1
+        nocycles = nocycles or {}
+        local str = ""
+        local ctr = 0
+        for i,v in next, tbl do
+            --if type(i) ~= "string" then --[[warn"Keys force as strings."]] end
+            if ctr > 0 then str = str..ch(types.c) end
+            local type = type(v)
+            type = (type == 'number' and 'n') or (type == 'string' and 's') or (type == 'table' and 'e') or error"unsupported type: "..type
+            if type ~= 'e' then
+                str = str..ch(types[type])
+                ..mc.Encode(i)..ch(types.k)
+                ..mc.Encode(v)..ch(types.ea)--..ch(types.c)
+            else
+                assert(not table.find(nocycles, v), "Cyclic table detected.")
+                local data = encode(v, nocycles, recursed)
+                table.insert(nocycles, v) --no cyclic detection = stack overflow
+                str = str..ch(types[type])..mc.Encode(i)..ch(types.k)
+                ..data..ch(types.ee)
+            end
+    --append to old:   [datatype],      [keyname],   [key-value separator], [value], [END OF READ], [comma]
+            ctr = ctr + 1
+        end
+        return str, ctr, recursed
+    end
+    return encode, decode
+end)()
 local module = {
-    Decode = parse,
+    Decode = function(a)
+        return type(a) == 'table' and tabledecode(a) or parse(a)
+    end,
     Encode = function(a)
-        local n, res = pcall(to, tostring(a))
-        assert(n, "Invalid conversion format. Did you forget a [ \\n / .Convert() ]?")
-        return res
+        return type(a) == 'table' and tableencode(a) or to(a)
     end
 }
 return module, info
