@@ -244,7 +244,9 @@ local module = {
         return type(a) == 'table' and tabledecode(a) or parse(a)
     end,
     Encode = function(a)
-        return type(a) == 'table' and tableencode(a) or to(a)
+        local ax, ay = pcall(to, a)
+        local x,y = pcall(tableencode, a)
+        return assert(ax or x, "Unknown") and (ax and ay) or (x and y)
     end
 }
 return module, info
