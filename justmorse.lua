@@ -247,3 +247,4 @@ local module = {
     EncodeTable = tableencode,
     DecodeTable = tabledecode
 }
+return module
