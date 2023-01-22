@@ -323,7 +323,8 @@ local module = {
     EncodeTable = tableencode,
     DecodeTable = tabledecode,
     FetchSave = function(path)
-        local a, save = isfile(path) and pcall(tabledecode, readfile(path))
+        if not isfile(path) then return end
+        local a, save = pcall(tabledecode, readfile(path))
         if a then return save end
         return 
         -- some ppl like `if fetchsave() == nil`
