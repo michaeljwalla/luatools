@@ -77,6 +77,7 @@ local tree = {
     32
 }
 local arctree = {[45] = 12123, [95] = 12112, [38] = 12111, [58] = 11221, [46] = 11121, [32] = 3,[69] = 13,[84] = 23,[73] = 113,[65] = 123,[78] = 213,[77] = 223,[83] = 1113,[85] = 1123,[82] = 1213,[87] = 1223,[68] = 2113,[75] = 2123,[71] = 2213,[79] = 2223,[72] = 11113,[86] = 11123,[70] = 11213,[76] = 12113,[80] = 12213,[74] = 12223,[66] = 21113,[88] = 21123,[67] = 21213,[89] = 21223,[90] = 22113,[81] = 22123,[53] = 11111,[52] = 11112,[51] = 11122,[50] = 11222,[43] = 12121,[49] = 12222,[54] = 21111,[61] = 21112,[47] = 21121,[55] = 22111,[56] = 22211,[57] = 22221,[48] = 22222}
+local c, b = string.char, string.byte
 local comma = c(info.c)
 local bools = {
     ['true'] = true,
@@ -96,7 +97,6 @@ local function isescape(str)
     local ind = find(info, b(str))
     return ind and type(ind) == 'string' and ind
 end
-local c, b = string.char, string.byte
 local function tf(tbl, item)
     for i,v in next, tbl do
         if v == item then return i end
